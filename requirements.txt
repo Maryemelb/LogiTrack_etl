@@ -1,0 +1,10 @@
+# Airflow DB
+psycopg2-binary
+
+pyspark==3.5.1
+
+pandas
+numpy
+scikit-learn
+pyarrow
+fastapi
