@@ -10,3 +10,8 @@ pyarrow
 fastapi
 seaborn
 matplotlib
+pytest
+passlib
+dotenv
+sqlalchemy
+pyjwt
