@@ -1,12 +1,18 @@
-from pyspark.sql.functions import col, when, dayofweek, hour, month, unix_timestamp
+from pyspark.sql.functions import col, when, dayofweek, hour, month
 import pyspark.sql.functions as sf
-from pyspark.sql.functions import sin, cos, col, lit
-import math
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pyspark.sql import SparkSession
 from bronze.data_injection import load_data
-def data_cleaning(df):
+def data_cleaning():
+      spark = SparkSession.builder \
+        .appName("silver_cleaning") \
+        .config("spark.driver.memory", "1g") \
+        .config("spark.executor.memory", "1g") \
+        .master("local[*]") \
+        .getOrCreate()
+      df= spark.read.parquet('/opt/airflow/data/bronze/taxi')
       cleaned_df= df.na.drop()
       cleaned_df = cleaned_df.withColumn("dure_trajet", (sf.unix_timestamp(sf.col("tpep_dropoff_datetime"))- sf.unix_timestamp(sf.col("tpep_pickup_datetime")))/60)
       cleaned_df= cleaned_df.filter((col("trip_distance")> 0) & (col("trip_distance")<200 ) & ( col("dure_trajet") > 0) & (col("passenger_count") > 0))
@@ -28,7 +34,7 @@ def data_cleaning(df):
 
       #handle Outliers
       for feature in numerical_df_cols.columns:
-         quartilles = numerical_df_cols.approxQuantile(feature, [0.25,0.50, 0.75],0) #0 err
+         quartilles = numerical_df_cols.approxQuantile(feature, [0.25,0.50, 0.75],0.5) #0 err
 
          iqr = quartilles[2] - quartilles[0]
          uper_bound= quartilles[2] + 1.5 * iqr
@@ -41,7 +47,9 @@ def data_cleaning(df):
               .otherwise(col(feature))
             
          )
-         return cleaned_df
-df= load_data()     
-df_clean = data_cleaning(df)
-df_clean.show()
+
+      cleaned_df.write.mode("overwrite").parquet("/opt/airflow/data/silver/cleaned_data")
+      return "data cleaning done"
+#df= load_data()     
+#df_clean = data_cleaning(df)
+#df_clean.show()

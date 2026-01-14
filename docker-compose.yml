@@ -38,9 +38,10 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
+      - ./src:/opt/airflow/src
       - ./plugins:/opt/airflow/plugins
-      - ./requirements.txt:/requirements.txt  
       - ./data:/opt/airflow/data   
+      - ./requirements.txt:/requirements.txt  
     command: >
       bash -c "
         pip install --no-cache-dir -r /requirements.txt &&
