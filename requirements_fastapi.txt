@@ -10,3 +10,4 @@ passlib
 sqlalchemy_utils
 argon2_cffi
 pyspark==3.5.1
+pandas
