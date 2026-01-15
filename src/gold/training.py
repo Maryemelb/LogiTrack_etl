@@ -29,6 +29,7 @@ def training_rf():
 
   evaluator= RegressionEvaluator(labelCol="dure_trajet", predictionCol="prediction_dure", metricName="r2")
   r2 = evaluator.evaluate(predictions)
+  model.write().overwrite().save("/opt/airflow/data/gold/saved_model")
   return {
     "rmse": remse,
     "r2": r2
