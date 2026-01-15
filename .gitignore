@@ -1,6 +1,9 @@
 env/
 api_env/
-__paycache__/
+__pycache__/
+*.pyc
 *.log
 .env
 logs/
+*.parquet
+data/
