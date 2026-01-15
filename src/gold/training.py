@@ -15,13 +15,24 @@ from pyspark.sql import SparkSession
 def training_rf():
   #set spark logs
   # spark.sparkContext.setLogLevel("INFO")
- train_input_path= "/opt/airflow/data/bronze/train_parquet"
- test_input_path= "/opt/airflow/data/bronze/test_parquet"
- spark= SparkSession.builder.appName('train_silver').master("local[*]").getOrCreate()
- rf= RandomForestRegressor(featuresCol= "features", labelCol="dure_trajet", predictionCol="prediction_dure",  numTrees=10,  maxDepth=6)
- train= spark.read.parquet(train_input_path)
- test= spark.read.parquet(test_input_path)
- try:
+  train_input_path= "/opt/airflow/data/bronze/train_parquet"
+  test_input_path= "/opt/airflow/data/bronze/test_parquet"
+ # spark= SparkSession.builder.appName('train_silver').master("local[*]").getOrCreate()
+  POSTGRES_JAR = "/opt/airflow/jars/postgresql-42.6.2.jar"
+  spark = SparkSession.builder\
+    .appName("session_spark")\
+    .master("local[*]")\
+    .config("spark.driver.memory", "1g")\
+    .config("spark.executor.memory", "1g")\
+    .config("spark.jars", POSTGRES_JAR)\
+    .config("spark.driver.extraClassPath", POSTGRES_JAR)\
+    .config("spark.executor.extraClassPath", POSTGRES_JAR)\
+    .getOrCreate()
+
+  rf= RandomForestRegressor(featuresCol= "features", labelCol="dure_trajet", predictionCol="prediction_dure",  numTrees=10,  maxDepth=6)
+  train= spark.read.parquet(train_input_path)
+  test= spark.read.parquet(test_input_path)
+ 
   model=rf.fit(train)
   predictions= model.transform(test)
   evaluator= RegressionEvaluator(labelCol="dure_trajet", predictionCol="prediction_dure", metricName="rmse")
@@ -34,8 +45,7 @@ def training_rf():
     "rmse": remse,
     "r2": r2
   }
- finally:
-   spark.stop()
+
 #df= load_data()
 #df_clean = data_cleaning(df)
 #df_clean = add_cyclical_time_features(df_clean)

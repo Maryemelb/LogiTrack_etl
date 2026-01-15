@@ -4,3 +4,8 @@ pyjwt
 sqlalchemy
 pytest
 uvicorn
+dotenv
+psycopg2-binary
+passlib
+sqlalchemy_utils
+argon2_cffi

@@ -12,8 +12,19 @@ from bronze.data_injection import load_data
 from silver.data_cleaning import data_cleaning
 from pyspark.sql import SparkSession
 def normalize():
- spark= SparkSession.builder.appName('normalize_silver').master("local[*]").getOrCreate()
- try:
+ # spark= SparkSession.builder.appName('normalize_silver').master("local[*]").getOrCreate()
+    POSTGRES_JAR = "/opt/airflow/jars/postgresql-42.6.2.jar"
+    spark = SparkSession.builder\
+    .appName("session_spark")\
+    .master("local[*]")\
+    .config("spark.driver.memory", "1g")\
+    .config("spark.executor.memory", "1g")\
+    .config("spark.jars", POSTGRES_JAR)\
+    .config("spark.driver.extraClassPath", POSTGRES_JAR)\
+    .config("spark.executor.extraClassPath", POSTGRES_JAR)\
+    .getOrCreate()
+
+
     cols_to_scale=[
         "passenger_count", "trip_distance", "tip_amount", "tolls_amount","congestion_surcharge", "Airport_fee"
     ]
@@ -47,8 +58,8 @@ def normalize():
     assembled_df_vecotr =assembled_df_vecotr.select("features", "dure_trajet")
     output_path = "/opt/airflow/data/bronze/normalized_data"
     assembled_df_vecotr.write.mode("overwrite").parquet(output_path)
- finally:
-    spark.stop()
+ 
+
 #df= load_data()
 #df_clean = data_cleaning(df)
 #df_clean = add_cyclical_time_features(df_clean)

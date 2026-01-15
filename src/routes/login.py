@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from src.services.auth_service import create_token  
-from schemas.user_schema import user_schema
-from models.user import users
+from src.schemas.user_schema import user_schema
+from src.models.user import users
 from dependencies import getdb
 from passlib.context import CryptContext
 import jwt
