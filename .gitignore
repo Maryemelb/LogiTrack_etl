@@ -3,3 +3,4 @@ api_env/
 __paycache__/
 *.log
 .env
+logs/
