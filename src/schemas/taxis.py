@@ -1,0 +1,26 @@
+from pydantic import BaseModel
+from datetime import datetime
+
+class TripData(BaseModel):
+    VendorID: int
+    tpep_pickup_datetime: datetime
+    tpep_dropoff_datetime: datetime
+    passenger_count: int
+    trip_distance: float
+    RatecodeID: int
+    store_and_fwd_flag: str  # usually 'Y' or 'N'
+    PULocationID: int
+    DOLocationID: int
+    payment_type: int
+    fare_amount: float
+    extra: float
+    mta_tax: float
+    tip_amount: float
+    tolls_amount: float
+    improvement_surcharge: float
+    total_amount: float
+    congestion_surcharge: float
+    Airport_fee: float
+    cbd_congestion_fee: float
+    # Original datetime features
+   
