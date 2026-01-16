@@ -204,8 +204,8 @@ print(response.json())
 
 ## 📈 Performance du Modèle
 
-- **RMSE** : 3.93 minutes
-- **Score R²** : 0.803
+- **RMSE** : 1.117 minutes
+- **Score R²** : 0.984
 - **Algorithme** : Random Forest Regressor
 - **Gestion des Valeurs Aberrantes** : Méthode IQR
 

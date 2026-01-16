@@ -3,10 +3,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from silver.adjust_cyclical_time_features import add_cyclical_time_features
 from bronze.data_injection import load_data
 from silver.data_cleaning import data_cleaning
-from silver.normalisation import normalize
 from pyspark.sql import SparkSession
 def split_data():
  # spark= SparkSession.builder.appName('split_silver').master("local[*]").getOrCreate()
@@ -21,9 +19,8 @@ def split_data():
     .config("spark.executor.extraClassPath", POSTGRES_JAR)\
     .getOrCreate()
 
-   input_path= "/opt/airflow/data/bronze/normalized_data"
+   input_path= "/opt/airflow/data/silver/cleaned_data"
    normalized_df = spark.read.parquet(input_path)
-
 
    train, test= normalized_df.randomSplit([0.7, 0.3])
    train.write.mode("overwrite").parquet("/opt/airflow/data/bronze/train_parquet")

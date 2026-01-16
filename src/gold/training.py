@@ -3,12 +3,11 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from silver.normalisation import normalize
 from pyspark.ml.regression import RandomForestRegressor
 from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml.feature import VectorAssembler
 
 from bronze.data_injection import load_data
-from silver.adjust_cyclical_time_features import add_cyclical_time_features
 from silver.data_cleaning import data_cleaning
 from silver.split_data import split_data
 from pyspark.sql import SparkSession
@@ -32,9 +31,18 @@ def training_rf():
   rf= RandomForestRegressor(featuresCol= "features", labelCol="dure_trajet", predictionCol="prediction_dure",  numTrees=10,  maxDepth=6)
   train= spark.read.parquet(train_input_path)
   test= spark.read.parquet(test_input_path)
- 
-  model=rf.fit(train)
-  predictions= model.transform(test)
+  cols = ["VendorID","passenger_count","trip_distance","RatecodeID","DOLocationID","payment_type","tip_amount","tolls_amount","congestion_surcharge","Airport_fee","dure_trajet","dropoff_hour","dropoff_dayofweek","dropoff_month","pickup_hour","pickup_dayofweek","pickup_month"]
+  assembler = VectorAssembler(
+    inputCols=cols,
+    outputCol="features"
+  )
+
+  train_vec = assembler.transform(train)
+  test_vec  = assembler.transform(test)
+  rf= RandomForestRegressor(featuresCol= "features", labelCol="dure_trajet", predictionCol="prediction_dure",  numTrees=10,  maxDepth=6)
+  model=rf.fit(train_vec)
+  
+  predictions= model.transform(test_vec)
   evaluator= RegressionEvaluator(labelCol="dure_trajet", predictionCol="prediction_dure", metricName="rmse")
   remse= evaluator.evaluate(predictions)
 
