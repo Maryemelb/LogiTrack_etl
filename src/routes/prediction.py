@@ -9,6 +9,9 @@ from dependencies import getdb
 from src.models.taxi import taxis_table
 from pyspark.sql import SparkSession
 from pyspark.ml import PipelineModel
+from pyspark.ml.regression import RandomForestRegressionModel
+from src.services.pipeline import data_pipline
+from pyspark.ml.feature import VectorAssembler
 router= APIRouter(
     prefix="/predict",
     tags= ["predict"]
@@ -103,9 +106,21 @@ def predict(taxi: TripData, db: Session= Depends(getdb)):
     "dropoff_month_sin": dropoff_month_sin,
     "dropoff_month_cos": dropoff_month_cos,
 }]
-# Calculate dure_trajet in minutes
+#create Assembler vector
  df= spark.createDataFrame(data)
- model_path='/home/hp/simplon_projects/duree_trajet/data/gold/saved_model'
- model= PipelineModel(model_path)
- result= model.transform(df)
+# df.show(2)
+ features=["VendorID","passenger_count","trip_distance","RatecodeID",
+    "DOLocationID","payment_type","tip_amount","tolls_amount","congestion_surcharge","Airport_fee",
+    "pickup_hour_sin","pickup_hour_cos","pickup_dayofweek_sin","pickup_dayofweek_cos","pickup_month_sin","pickup_month_cos","dropoff_hour_sin","dropoff_hour_cos",
+    "dropoff_dayofweek_sin","dropoff_dayofweek_cos","dropoff_month_sin","dropoff_month_cos"]
+ #assembler_vector= VectorAssembler(inputCols=features, outputCol="features")
+ #df_vector= assembler_vector.transform(df)
+ #df_vector =df_vector.select("features")
+ # df_vector.show(2)
+ df_pip= data_pipline(df)
+ df_pip.show()
+ model_path='./data/gold/saved_model'
+ model= RandomForestRegressionModel.load(model_path)
+ result= model.transform(df_pip.select('features'))
+ result.select('prediction_dure').show()
  return {"status": "ok", "dure_trajet": dure_trajet}
