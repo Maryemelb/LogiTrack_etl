@@ -1,0 +1,13 @@
+pydantic
+fastapi
+pyjwt
+sqlalchemy
+pytest
+uvicorn
+dotenv
+psycopg2-binary
+passlib
+sqlalchemy_utils
+argon2_cffi
+pyspark==3.5.1
+pandas

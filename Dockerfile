@@ -14,4 +14,9 @@ USER airflow
 
 # Install Python dependencies
 COPY requirements.txt /requirements.txt
+COPY ./jars/postgresql-42.6.2.jar /opt/airflow/jars/postgresql-42.6.2.jar
+
+# Tell Spark where to find jars
+ENV SPARK_CLASSPATH=/opt/airflow/jars/postgresql-42.6.2.jar
+
 RUN pip install --no-cache-dir -r /requirements.txt

@@ -1,4 +1,4 @@
-from ..database import Base
+from src.db.database import Base
 from sqlalchemy import Column, DateTime, Integer, String
 from datetime import datetime
 

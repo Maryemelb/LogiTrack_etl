@@ -16,3 +16,4 @@ dotenv
 sqlalchemy
 pyjwt
 apache-airflow==2.8.1
+# pip install "email-validator<2"
